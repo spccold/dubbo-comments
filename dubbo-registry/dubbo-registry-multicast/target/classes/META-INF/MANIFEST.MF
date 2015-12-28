@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Built-By: jileng
+Build-Jdk: 1.8.0_51
+Specification-Title: dubbo-registry-multicast
+Specification-Version: 2.5.4-SNAPSHOT
+Specification-Vendor: Alibaba
+Implementation-Title: dubbo-registry-multicast
+Implementation-Version: 2.5.4-SNAPSHOT
+Implementation-Vendor-Id: com.alibaba
+Implementation-Vendor: Alibaba
+Created-By: Maven Integration for Eclipse
+
