@@ -70,32 +70,35 @@ public class ExtensionLoader<T> {
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
 
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
-    
+    //每个spi interface对应一个ExtensionLoader
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
 
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
     // ==============================
-
+    
+    //当前ExtensionLoader负责的spi interface
     private final Class<?> type;
 
+    //当type为ExtensionFactory时, objectFactory is null
     private final ExtensionFactory objectFactory;
 
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
-    
+    //当前spi interface所有扩展点名称与之对应的扩展点(注意: cachedAdaptiveClass,cachedWrapperClasses不在其中)
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String,Class<?>>>();
-
+    // 当前spi interface 所有provider的name和对应含有@Activate注解的提供者
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();
-
+    
+    //当前spi interface所有提供者的唯一一个标识@Adaptive注解的提供者
     private volatile Class<?> cachedAdaptiveClass = null;
 
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
-
+    // 当前spi interface缺省的扩展点名称,SPI("xxx")
     private String cachedDefaultName;
 
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
     private volatile Throwable createAdaptiveInstanceError;
-
+    //当前spi interface所有提供者中那些含有以当前interface为参数构造函数的提供者
     private Set<Class<?>> cachedWrapperClasses;
     
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
@@ -196,6 +199,7 @@ public class ExtensionLoader<T> {
         if (! names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) {
             getExtensionClasses();
             for (Map.Entry<String, Activate> entry : cachedActivates.entrySet()) {
+                //扩展点名称
                 String name = entry.getKey();
                 Activate activate = entry.getValue();
                 if (isMatchGroup(group, activate.group())) {
@@ -527,7 +531,7 @@ public class ExtensionLoader<T> {
     
     private T injectExtension(T instance) {
         try {
-            if (objectFactory != null) {
+            if (objectFactory != null) {//ExtensionFactory自己不需要这个逻辑
                 for (Method method : instance.getClass().getMethods()) {
                     if (method.getName().startsWith("set")
                             && method.getParameterTypes().length == 1
@@ -582,6 +586,7 @@ public class ExtensionLoader<T> {
     private Map<String, Class<?>> loadExtensionClasses() {
         final SPI defaultAnnotation = type.getAnnotation(SPI.class);
         if(defaultAnnotation != null) {
+            //获取缺省扩展点
             String value = defaultAnnotation.value();
             if(value != null && (value = value.trim()).length() > 0) {
                 String[] names = NAME_SEPARATOR.split(value);
@@ -676,11 +681,13 @@ public class ExtensionLoader<T> {
                                                             cachedActivates.put(names[0], activate);
                                                         }
                                                         for (String n : names) {
+                                                            //一个提供者只关联一个扩展点名称
                                                             if (! cachedNames.containsKey(clazz)) {
                                                                 cachedNames.put(clazz, n);
                                                             }
                                                             Class<?> c = extensionClasses.get(n);
                                                             if (c == null) {
+                                                                //所有扩展点名称与当前提供者都存在映射关系
                                                                 extensionClasses.put(n, clazz);
                                                             } else if (c != clazz) {
                                                                 throw new IllegalStateException("Duplicate extension " + type.getName() + " name " + n + " on " + c.getName() + " and " + clazz.getName());
@@ -900,7 +907,7 @@ public class ExtensionLoader<T> {
                             if (hasInvocation) 
                                 getNameCode = String.format("url.getMethodParameter(methodName, \"%s\", \"%s\")", value[i], defaultExtName);
                             else
-                                getNameCode = String.format("url.getParameter(\"%s\", %s)", value[i], getNameCode);
+                                getNameCode = String.format("url.getParameter(\"%s\", %s)", value[i], getNameCode);//拼接之前的getNameCode
                         else
                             getNameCode = String.format("url.getProtocol() == null ? (%s) : url.getProtocol()", getNameCode);
                     }

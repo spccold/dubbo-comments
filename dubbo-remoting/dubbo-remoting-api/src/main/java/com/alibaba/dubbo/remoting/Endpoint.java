@@ -62,7 +62,7 @@ public interface Endpoint {
      * send message.
      * 
      * @param message
-     * @param sent 是否已发送完成
+     * @param sent 是否等待发送完成才返回
      */
     void send(Object message, boolean sent) throws RemotingException;
 

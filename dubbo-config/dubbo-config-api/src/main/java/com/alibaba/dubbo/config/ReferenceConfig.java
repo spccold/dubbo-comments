@@ -59,7 +59,7 @@ import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 public class ReferenceConfig<T> extends AbstractReferenceConfig {
 
     private static final long    serialVersionUID        = -5864351140409987595L;
-
+    //获取适应的，适合的的扩展
     private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
     private static final Cluster cluster = ExtensionLoader.getExtensionLoader(Cluster.class).getAdaptiveExtension();
@@ -172,12 +172,11 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (getGeneric() == null && getConsumer() != null) {
             setGeneric(getConsumer().getGeneric());
         }
-        if (ProtocolUtils.isGeneric(getGeneric())) {
+        if (ProtocolUtils.isGeneric(getGeneric())) {//是否为泛化调用
             interfaceClass = GenericService.class;
         } else {
             try {
-				interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
-				        .getContextClassLoader());
+				interfaceClass = Class.forName(interfaceName, true, Thread.currentThread().getContextClassLoader());
 			} catch (ClassNotFoundException e) {
 				throw new IllegalStateException(e.getMessage(), e);
 			}
