@@ -50,10 +50,14 @@ public class ProtocolFilterWrapper implements Protocol {
 
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         //FIXME  first: registry:// =>  Protocol&Adaptive => ProtocolFilterWrapper => ProtocolListnerWrapper => RegistryProtocol  add by jileng
+        //如果是RegistryProtocol则直接放行
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
         }
         //FIXME second: dubbo:// => RegsitryProtocol.doLocalExport() > Protocol&Adaptive => ProtocolFilterWrapper => ProtocolListnerWrapper => DubboProtocol  add by jileng
+        //invoke come from RegistryProtocol.doLocalExport(), invoke(InvokerDelegete(AbstractProxyInvoker))
+        //buildInvokerChain添加Filter
+        //protocol = ProtocolListnerWrapper
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }
 

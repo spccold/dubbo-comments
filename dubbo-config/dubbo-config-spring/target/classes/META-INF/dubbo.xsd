@@ -875,7 +875,106 @@
 		</xsd:attribute>
 		<xsd:anyAttribute namespace="##other" processContents="lax" />
 	</xsd:complexType>
+
+	<xsd:complexType name="serviceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractServiceType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element ref="method" minOccurs="0" maxOccurs="unbounded" />
+					<xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded" />
+					<xsd:element ref="beans:property" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:choice>
+				<xsd:attribute name="interface" type="xsd:token" use="required">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ Defines the interface to advertise for this service in the service registry. ]]></xsd:documentation>
+						<xsd:appinfo>
+							<tool:annotation>
+								<tool:expected-type type="java.lang.Class"/>
+							</tool:annotation>
+						</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="ref" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ The service implementation instance bean id. ]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="class" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ The service implementation class name. ]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="path" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ The service path. ]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="provider" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ Deprecated. Replace to protocol. ]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+                <xsd:attribute name="generic" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ Generic service. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+				<xsd:anyAttribute namespace="##other" processContents="lax" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
+	<xsd:complexType name="annotationType">
+		<xsd:attribute name="id" type="xsd:ID">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ The unique identifier for a bean. ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="package" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ The scan package. ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:element name="annotation" type="annotationType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ The annotation config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="application" type="applicationType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ The application config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="module" type="moduleType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ The module config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="registry" type="registryType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ The registry config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="monitor" type="monitorType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ The logstat monitor config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- <dubbo:provider/> -->
+	<xsd:element name="provider" type="providerType">
+		<xsd:annotation> 
+			<xsd:documentation><![CDATA[ Export service default config ]]></xsd:documentation> 
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- xsd complexType for <dubbo:provider/> -->
 	<xsd:complexType name="providerType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractServiceType">
@@ -1017,104 +1116,6 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-
-	<xsd:complexType name="serviceType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractServiceType">
-				<xsd:choice minOccurs="0" maxOccurs="unbounded">
-					<xsd:element ref="method" minOccurs="0" maxOccurs="unbounded" />
-					<xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded" />
-					<xsd:element ref="beans:property" minOccurs="0" maxOccurs="unbounded" />
-				</xsd:choice>
-				<xsd:attribute name="interface" type="xsd:token" use="required">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ Defines the interface to advertise for this service in the service registry. ]]></xsd:documentation>
-						<xsd:appinfo>
-							<tool:annotation>
-								<tool:expected-type type="java.lang.Class"/>
-							</tool:annotation>
-						</xsd:appinfo>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="ref" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ The service implementation instance bean id. ]]></xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="class" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ The service implementation class name. ]]></xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="path" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ The service path. ]]></xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="provider" type="xsd:string" use="optional">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ Deprecated. Replace to protocol. ]]></xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-                <xsd:attribute name="generic" type="xsd:string" use="optional">
-                    <xsd:annotation>
-                        <xsd:documentation><![CDATA[ Generic service. ]]></xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-				<xsd:anyAttribute namespace="##other" processContents="lax" />
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	
-	<xsd:complexType name="annotationType">
-		<xsd:attribute name="id" type="xsd:ID">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[ The unique identifier for a bean. ]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="package" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[ The scan package. ]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	
-	<xsd:element name="annotation" type="annotationType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ The annotation config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="application" type="applicationType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ The application config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="module" type="moduleType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ The module config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="registry" type="registryType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ The registry config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="monitor" type="monitorType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ The logstat monitor config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="provider" type="providerType">
-		<xsd:annotation> 
-			<xsd:documentation><![CDATA[ Export service default config ]]></xsd:documentation> 
-		</xsd:annotation>
-	</xsd:element>
-	
 	<xsd:element name="consumer" type="consumerType">
 		<xsd:annotation> 
 			<xsd:documentation><![CDATA[ Service reference default config ]]></xsd:documentation> 

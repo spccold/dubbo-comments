@@ -57,7 +57,7 @@ import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private static final long   serialVersionUID = 3033787999037024738L;
-
+    //default is dubbo protocol
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
     
     private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
@@ -468,9 +468,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
             //配置不是remote的情况下做本地暴露 (配置为remote，则表示只暴露远程服务)
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
+                //这时的url还是dubbo协议(dubbo://)
                 exportLocal(url);
             }
-            //如果配置不是local则暴露为远程服务.(配置为local，则表示只暴露远程服务)
+            //如果配置不是local则暴露为远程服务.(配置为local，则表示只暴露本地服务)
             if (! Constants.SCOPE_LOCAL.toString().equalsIgnoreCase(scope) ){
                 if (logger.isInfoEnabled()) {
                     logger.info("Export dubbo service " + interfaceClass.getName() + " to url " + url);
@@ -486,15 +487,29 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         if (logger.isInfoEnabled()) {
                             logger.info("Register dubbo service " + interfaceClass.getName() + " url " + url + " to registry " + registryURL);
                         }
+                        //此时协议变为registry://
+                        //registry://localhost:2181/com.alibaba.dubbo.registry.RegistryService?application=dubbo-test-provider1&dubbo=2.0.0
+                        //
+                        //  ---------------------&export为URLdecode之后的结果，在dubbo视线中是URLencode的，对应paramter export
+                        //  &export=dubbo://192.168.199.141:20880/com.geek.dubbo.test.api.UserService?anyhost=true
+                        //  &application=dubbo-test-provider1&dubbo=2.0.0&generic=false&group=GroupA
+                        //  &interface=com.geek.dubbo.test.api.UserService&methods=createUser,getUser&pid=820&revision=1.0.0
+                        //  &side=provider&timeout=1000000&timestamp=1446368426004&version=1.0.0
+                        //  ------------------------------------------------------------------------------------------------
+                        //
+                        //  &pid=820&registry=zookeeper&timestamp=1446368425984
                         //FIXME stubproxyfactorywrapper => jdk/javassist  对ref进行wrap
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         //FIXME 每个service在所有的registry中都注册和export一次 add by spccold
+                        //protocol => Protocol$Adaptive(见ExtensionLoader Adaptive Class的动态生成逻辑)
+                        //@see ProtocolListenerWrapper, ProtocolFilterWrapper(ExtensionLoader的wrapper机制)
+                        //exporter = new Exporter(ExporterChangeableWrapper(ListenerExporterWrapper(DubboExporter))), invoker=Filters->InvokeDelegate->AbstractProxyInvoker
                         Exporter<?> exporter = protocol.export(invoker);
                         exporters.add(exporter);
                     }
                 } else {
+                    //如果无registry信息(@see exportLocal(URL url) 一样的啊)
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
-
                     Exporter<?> exporter = protocol.export(invoker);
                     exporters.add(exporter);
                 }

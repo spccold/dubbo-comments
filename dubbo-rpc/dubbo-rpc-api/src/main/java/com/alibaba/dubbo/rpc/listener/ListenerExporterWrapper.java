@@ -31,7 +31,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 public class ListenerExporterWrapper<T> implements Exporter<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ListenerExporterWrapper.class);
-
+    //default is dubbo exporter
     private final Exporter<T> exporter;
     
     private final List<ExporterListener> listeners;

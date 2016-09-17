@@ -246,7 +246,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 setPath(beanName);
             }
         }
-        if (! isDelay()) {
+        if (!isDelay()) {//延迟暴露?
             export();
         }
     }

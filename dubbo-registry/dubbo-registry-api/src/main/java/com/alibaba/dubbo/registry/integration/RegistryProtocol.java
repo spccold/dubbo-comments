@@ -50,28 +50,26 @@ import com.alibaba.dubbo.rpc.protocol.InvokerWrapper;
 public class RegistryProtocol implements Protocol {
 
     private Cluster cluster;
+    private Protocol protocol;
+    private RegistryFactory registryFactory;
+    private ProxyFactory proxyFactory;
     
+    /*************见ExtesionLoader setter注入SPI逻辑*****************/
+    //基本是下面的逻辑
+    //AdaptiveExtensionFactory -> SpiExtensionFactory/SpringExtensionFactory -> getAdaptiveExtension
     public void setCluster(Cluster cluster) {
         this.cluster = cluster;
     }
-    
-    private Protocol protocol;
-    
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
-
-    private RegistryFactory registryFactory;
-    
     public void setRegistryFactory(RegistryFactory registryFactory) {
         this.registryFactory = registryFactory;
     }
-
-    private ProxyFactory proxyFactory;
-    
     public void setProxyFactory(ProxyFactory proxyFactory) {
         this.proxyFactory = proxyFactory;
     }
+    /*************见ExtesionLoader setter注入SPI逻辑*****************/
 
     public int getDefaultPort() {
         return 9090;
@@ -125,6 +123,7 @@ public class RegistryProtocol implements Protocol {
         //保证每次export都返回一个新的exporter实例
         return new Exporter<T>() {
             public Invoker<T> getInvoker() {
+                //Filters->InvokeDelegate->AbstractProxyInvoker
                 return exporter.getInvoker();
             }
             public void unexport() {
@@ -160,6 +159,7 @@ public class RegistryProtocol implements Protocol {
                     final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
                     //FIXME  protocol为Protocol&Adaptive 解析协议之后获得DubboProtocol,通过DubboProtocol.export invokerDelegete  add by jileng
                     //FIXME ProtocolFilterWrapper(ProtocolListenerWrapper(DubboProtocol)) add by jileng
+                    //ExporterChangeableWrapper(ListenerExporterWrapper(DubboExporter))
                     exporter = new ExporterChangeableWrapper<T>((Exporter<T>)protocol.export(invokerDelegete), originInvoker);
                     bounds.put(key, exporter);
                 }

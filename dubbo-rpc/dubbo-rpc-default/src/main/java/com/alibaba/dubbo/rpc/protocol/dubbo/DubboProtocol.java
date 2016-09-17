@@ -295,7 +295,11 @@ public class DubboProtocol extends AbstractProtocol {
         //FIXME HeaderExchangeServer  add  by jileng
         ExchangeServer server;
         try {
+            //所有handler的调用链
+            //Netty->NettyHandler->NettyServer->MultiMessageHandler->HeartbeatHandler->(SPI,default is ALL)Dispatcher.dispatch()
+            //->DecodeHandler->HeaderExchangeHandler->DubboProtocol.requestHandler
             server = Exchangers.bind(url, requestHandler);
+            requestHandler.sent(null, null);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }
