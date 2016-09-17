@@ -36,6 +36,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
         super(handler);
     }
 
+    //这样也可以用业务线程次接管decode(decode.in.io=false才行)
     public void received(Channel channel, Object message) throws RemotingException {
         if (message instanceof Decodeable) {
             decode(message);

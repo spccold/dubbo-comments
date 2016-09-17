@@ -94,6 +94,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                             Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
                             result = new DecodeableRpcResult(channel, res, is,
                                                              (Invocation)getRequestData(id), proto);
+                            //直接在当前io线程上执行decode
                             result.decode();
                         } else {
                             result = new DecodeableRpcResult(channel, res,

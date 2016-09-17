@@ -58,6 +58,7 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
         handler.sent(channel, message);
     }
 
+    //在这里处理心跳请求
     //FIXME channel => NettyChannel  add by jileng
     public void received(Channel channel, Object message) throws RemotingException {
         setReadTimestamp(channel);

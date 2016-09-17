@@ -59,7 +59,7 @@ final class HeartBeatTask implements Runnable {
                             || ( lastWrite != null && now - lastWrite > heartbeat ) ) {
                         Request req = new Request();
                         req.setVersion( "2.0.0" );
-                        req.setTwoWay( true );
+                        req.setTwoWay( true );//为啥需要双向?
                         req.setEvent( Request.HEARTBEAT_EVENT );
                         channel.send( req );
                         if ( logger.isDebugEnabled() ) {
@@ -67,16 +67,17 @@ final class HeartBeatTask implements Runnable {
                                                   + ", cause: The channel has no data-transmission exceeds a heartbeat period: " + heartbeat + "ms" );
                         }
                     }
+                    //heartbeatTimeout default is 3*heartbeat
                     if ( lastRead != null && now - lastRead > heartbeatTimeout ) {
                         logger.warn( "Close channel " + channel
                                              + ", because heartbeat read idle time out: " + heartbeatTimeout + "ms" );
-                        if (channel instanceof Client) {
+                        if (channel instanceof Client) {//consumer执行重连
                         	try {
                         		((Client)channel).reconnect();
                         	}catch (Exception e) {
 								//do nothing
 							}
-                        } else {
+                        } else {//provider端直接关闭channel
                         	channel.close();
                         }
                     }
