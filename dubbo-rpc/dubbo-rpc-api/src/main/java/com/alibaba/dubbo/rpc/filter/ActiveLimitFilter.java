@@ -32,7 +32,7 @@ import com.alibaba.dubbo.rpc.RpcStatus;
  */
 @Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY)
 public class ActiveLimitFilter implements Filter {
-
+    //并发限制
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         URL url = invoker.getUrl();
         String methodName = invocation.getMethodName();
@@ -47,6 +47,7 @@ public class ActiveLimitFilter implements Filter {
                 synchronized (count) {
                     while ((active = count.getActive()) >= max) {
                         try {
+                            //这边也有超时措施， 真是妙啊
                             count.wait(remain);
                         } catch (InterruptedException e) {
                         }

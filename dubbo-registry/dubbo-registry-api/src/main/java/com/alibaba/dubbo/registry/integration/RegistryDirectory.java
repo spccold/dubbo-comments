@@ -398,6 +398,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 	}
                 	if (enabled) {
                 	    //FIXME 创建新的invoke  add by jileng
+                	    //InvokerDelegete->Filters->DubboInvoker
                 		invoker = new InvokerDelegete<T>(protocol.refer(serviceType, url), url, providerUrl);
                 	}
                 } catch (Throwable t) {

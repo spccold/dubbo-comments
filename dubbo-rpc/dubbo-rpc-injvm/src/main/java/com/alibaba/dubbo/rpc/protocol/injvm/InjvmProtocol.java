@@ -60,7 +60,9 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         return new InjvmExporter<T>(invoker, invoker.getUrl().getServiceKey(), exporterMap);
     }
-
+    
+    //之前还以为可以在同一机器跨jvm调用呢， 原来只是在同一个jvm实例内自己调用自己，这个有啥意思
+    //如果同一台机器可以跨jvm调用还是有意义的(考虑到同机房调用, 单个性能强劲的物理机器没有划分虚拟机，consumer和provider都部署在上面的)
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
         return new InjvmInvoker<T>(serviceType, url, url.getServiceKey(), exporterMap);
     }

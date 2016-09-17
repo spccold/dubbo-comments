@@ -48,10 +48,13 @@ import com.alibaba.dubbo.rpc.protocol.InvokerWrapper;
  * @author chao.liuc
  */
 public class RegistryProtocol implements Protocol {
-
+    //Cluster$Adaptive, default is FailoverCluster
     private Cluster cluster;
+    //Protocol$Adaptive, default is DubboProtocol
     private Protocol protocol;
+    //RegistryFactory$Adaptive, default is DubboRegistryFactory(ZookeeperRegistryFactory often use)
     private RegistryFactory registryFactory;
+    //ProxyFactory$Adaptive, default is JavassistProxyFactory
     private ProxyFactory proxyFactory;
     
     /*************见ExtesionLoader setter注入SPI逻辑*****************/
@@ -259,6 +262,7 @@ public class RegistryProtocol implements Protocol {
     @SuppressWarnings("unchecked")
 	public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY);
+        //registry=zookeeper
         Registry registry = registryFactory.getRegistry(url);
         if (RegistryService.class.equals(type)) {
         	return proxyFactory.getInvoker((T) registry, type, url);
@@ -306,6 +310,7 @@ public class RegistryProtocol implements Protocol {
                 Constants.PROVIDERS_CATEGORY 
                 + "," + Constants.CONFIGURATORS_CATEGORY 
                 + "," + Constants.ROUTERS_CATEGORY));
+        //FailfastCluster
         return cluster.join(directory);
     }
 

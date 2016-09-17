@@ -38,6 +38,7 @@ public class AvailableCluster implements Cluster {
         
         return new AbstractClusterInvoker<T>(directory) {
             public Result doInvoke(Invocation invocation, List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
+                //这里没什么特殊的均衡逻辑
                 for (Invoker<T> invoker : invokers) {
                     if (invoker.isAvailable()) {
                         return invoker.invoke(invocation);

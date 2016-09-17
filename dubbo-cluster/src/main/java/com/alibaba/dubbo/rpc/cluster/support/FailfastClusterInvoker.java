@@ -42,6 +42,7 @@ public class FailfastClusterInvoker<T> extends AbstractClusterInvoker<T>{
     
     public Result doInvoke(Invocation invocation, List<Invoker<T>> invokers, LoadBalance loadbalance) throws RpcException {
         checkInvokers(invokers, invocation);
+        //do loadbalance
         Invoker<T> invoker = select(loadbalance, invocation, invokers, null);
         try {
             return invoker.invoke(invocation);

@@ -182,6 +182,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     @Override
     public void connected(Channel ch) throws RemotingException {
         Collection<Channel> channels = getChannels();
+        //当前server的最大连接数限制
         if (accepts > 0 && channels.size() > accepts) {
             logger.error("Close channel " + ch + ", cause: The server " + ch.getLocalAddress() + " connections greater than max config " + accepts);
             ch.close();

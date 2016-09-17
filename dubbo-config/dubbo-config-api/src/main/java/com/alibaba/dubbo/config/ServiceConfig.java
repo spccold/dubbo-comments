@@ -445,7 +445,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 map.put("token", token);
             }
         }
+        //injvm
         if ("injvm".equals(protocolConfig.getName())) {
+            //禁止向注册中心注册
             protocolConfig.setRegister(false);
             map.put("notify", "false");
         }
@@ -468,7 +470,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
             //配置不是remote的情况下做本地暴露 (配置为remote，则表示只暴露远程服务)
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
-                //这时的url还是dubbo协议(dubbo://)
+                //injvm://
                 exportLocal(url);
             }
             //如果配置不是local则暴露为远程服务.(配置为local，则表示只暴露本地服务)
@@ -508,7 +510,6 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         exporters.add(exporter);
                     }
                 } else {
-                    //如果无registry信息(@see exportLocal(URL url) 一样的啊)
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
                     Exporter<?> exporter = protocol.export(invoker);
                     exporters.add(exporter);
@@ -521,11 +522,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void exportLocal(URL url) {
+        //如果protocol原来就是injvm，那么就不用首先本地暴露, 因为后面正常的流程也会在本地暴露
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
             URL local = URL.valueOf(url.toFullString())
-                    .setProtocol(Constants.LOCAL_PROTOCOL)
-                    .setHost(NetUtils.LOCALHOST)
+                    .setProtocol(Constants.LOCAL_PROTOCOL)//injvm
+                    .setHost(NetUtils.LOCALHOST)//127.0.0.1
                     .setPort(0);
+            //InjvmProtocol
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
             exporters.add(exporter);

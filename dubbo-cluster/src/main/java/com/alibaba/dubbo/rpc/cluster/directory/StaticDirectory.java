@@ -80,7 +80,6 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
     
     @Override
     protected List<Invoker<T>> doList(Invocation invocation) throws RpcException {
-
         return invokers;
     }
 

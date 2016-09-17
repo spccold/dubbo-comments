@@ -65,6 +65,7 @@ public class ProtocolConfig extends AbstractConfig {
     private Integer             queues;
     
     // 最大接收连接数
+    // 没有使用啊，坑爹
     private Integer             accepts;
     
     // 协议编码

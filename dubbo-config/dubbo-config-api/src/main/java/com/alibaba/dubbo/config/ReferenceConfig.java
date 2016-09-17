@@ -351,13 +351,15 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         }
 		
 		if (isJvmRefer) {
+		    //injvm://
 			URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
+			//本地调用啊
 			invoker = refprotocol.refer(interfaceClass, url);
             if (logger.isInfoEnabled()) {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
 		} else {
-            if (url != null && url.length() > 0) { // 用户指定URL，指定的URL可能是对点对直连地址，也可能是注册中心URL
+            if (url != null && url.length() > 0) { // 用户指定URL，指定的URL可能是对点对直连地址
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
                     for (String u : us) {
@@ -365,14 +367,15 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                         if (url.getPath() == null || url.getPath().length() == 0) {
                             url = url.setPath(interfaceName);
                         }
-                        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+                        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {//registry://
                             urls.add(url.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
-                        } else {
+                        } else {//dubbo://ip:port
                             urls.add(ClusterUtils.mergeUrl(url, map));
                         }
                     }
                 }
             } else { // 通过注册中心配置拼装URL
+                //可能存在多注册中心饮用
             	List<URL> us = loadRegistries(false);
             	if (us != null && us.size() > 0) {
                 	for (URL u : us) {
@@ -400,14 +403,17 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 for (URL url : urls) {
                     invokers.add(refprotocol.refer(interfaceClass, url));
                     if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
-                        registryURL = url; // 用了最后一个registry url
+                        registryURL = url;
                     }
                 }
-                if (registryURL != null) { // 有 注册中心协议的URL
+                if (registryURL != null) { // 有注册中心协议的URL，否则就是直连地址
                     // 对有注册中心的Cluster 只用 AvailableCluster
-                    URL u = registryURL.addParameter(Constants.CLUSTER_KEY, AvailableCluster.NAME); 
+                    URL u = registryURL.addParameter(Constants.CLUSTER_KEY, AvailableCluster.NAME);
+                    //这里u除了可以让Cluster$Adaptive选择AvailableCluster就没有其它具体的意义了
+                    //这里的invokers可能包含FailfastClusterInvoker->InvokeDelegate->Filter->ListenerInvokerWrapper->DubboInvoker(含注册中心)
+                    //和Filter->ListenerInvokerWrapper->DubboInvoker(直连provider)
                     invoker = cluster.join(new StaticDirectory(u, invokers));
-                }  else { // 不是 注册中心的URL
+                }  else { // 不是注册中心的URL, 默认FailoverCluster
                     invoker = cluster.join(new StaticDirectory(invokers));
                 }
             }

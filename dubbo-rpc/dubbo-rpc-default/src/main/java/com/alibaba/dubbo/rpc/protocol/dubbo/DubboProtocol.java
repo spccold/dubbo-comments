@@ -113,7 +113,7 @@ public class DubboProtocol extends AbstractProtocol {
 
         @Override
         public void received(Channel channel, Object message) throws RemotingException {
-            if (message instanceof Invocation) {
+            if (message instanceof Invocation) {//consumer端处理来自provider端的回调
                 reply((ExchangeChannel) channel, message);
             } else {
                 super.received(channel, message);
@@ -299,7 +299,6 @@ public class DubboProtocol extends AbstractProtocol {
             //Netty->NettyHandler->NettyServer->MultiMessageHandler->HeartbeatHandler->(SPI,default is ALL)Dispatcher.dispatch()
             //->DecodeHandler->HeaderExchangeHandler->DubboProtocol.requestHandler
             server = Exchangers.bind(url, requestHandler);
-            requestHandler.sent(null, null);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }
