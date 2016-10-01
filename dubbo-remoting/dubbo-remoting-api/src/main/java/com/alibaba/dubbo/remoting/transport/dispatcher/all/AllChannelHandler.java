@@ -25,7 +25,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.transport.dispatcher.ChannelEventRunnable;
 import com.alibaba.dubbo.remoting.transport.dispatcher.WrappedChannelHandler;
 import com.alibaba.dubbo.remoting.transport.dispatcher.ChannelEventRunnable.ChannelState;
-
+//对于client来说 , send根本不会消耗任何线程, receive会
 public class AllChannelHandler extends WrappedChannelHandler {
     
     public AllChannelHandler(ChannelHandler handler, URL url) {

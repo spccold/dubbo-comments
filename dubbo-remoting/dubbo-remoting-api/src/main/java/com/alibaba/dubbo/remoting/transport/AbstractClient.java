@@ -57,7 +57,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     private static final AtomicInteger CLIENT_THREAD_POOL_ID = new AtomicInteger();
 
     private final Lock            connectLock = new ReentrantLock();
-    
+    //用于channel重连
     private static final ScheduledThreadPoolExecutor reconnectExecutorService = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("DubboClientReconnectTimer", true));
     
     private volatile  ScheduledFuture<?> reconnectExecutorFuture = null;
@@ -259,7 +259,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
     
     public void send(Object message, boolean sent) throws RemotingException {
+        //连接是否可用，如果不可以进行重连(reliable保障),  dubbo没有断开定时重连的逻辑?
         if (send_reconnect && !isConnected()){
+            //为啥这里恢复成功后，不cancel reconnectExecutorFuture?
             connect();
         }
         Channel channel = getChannel();

@@ -67,12 +67,14 @@ public class HeaderExchangeClient implements ExchangeClient {
         this.client = client;
         this.channel = new HeaderExchangeChannel(client);
         String dubbo = client.getUrl().getParameter(Constants.DUBBO_VERSION_KEY);
+        //获取心跳间隔
         this.heartbeat = client.getUrl().getParameter( Constants.HEARTBEAT_KEY, dubbo != null && dubbo.startsWith("1.0.") ? Constants.DEFAULT_HEARTBEAT : 0 );
+        //获取心跳超时时间
         this.heartbeatTimeout = client.getUrl().getParameter( Constants.HEARTBEAT_TIMEOUT_KEY, heartbeat * 3 );
         if ( heartbeatTimeout < heartbeat * 2 ) {
             throw new IllegalStateException( "heartbeatTimeout < heartbeatInterval * 2" );
         }
-        //开启心跳检测
+        //为啥要在HeaderExchangerClient开启心跳检查?重要是心跳超时的时候需要执行reconnect, 从api的设计上来说, reconnect属于client的职责
         startHeatbeatTimer();
     }
 

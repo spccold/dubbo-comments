@@ -237,6 +237,7 @@ public class DefaultFuture implements ResponseFuture {
         try {
             DefaultFuture future = FUTURES.remove(response.getId());
             if (future != null) {
+                //收到消息啦
                 future.doReceived(response);
             } else {
                 logger.warn("The timeout response finally returned at " 

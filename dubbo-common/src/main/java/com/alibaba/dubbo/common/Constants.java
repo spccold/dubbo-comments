@@ -218,8 +218,6 @@ public class Constants {
 
     public static final String  ALIVE_KEY                          = "alive";
 
-    public static final String  EXECUTES_KEY                       = "executes";
-
     public static final String  BUFFER_KEY                         = "buffer";
 
     public static final String  PAYLOAD_KEY                        = "payload";
@@ -233,11 +231,13 @@ public class Constants {
     public static final String  EXPORTER_LISTENER_KEY              = "exporter.listener";
 
     public static final String  ACCESS_LOG_KEY                     = "accesslog";
-
+    // 服务提供者每服务每方法最大可并行执行请求数
+    public static final String  EXECUTES_KEY                       = "executes";
+    // 每服务消费者每服务每方法最大并发调用数
     public static final String  ACTIVES_KEY                        = "actives";
-
+    // DUBBO等长连接协表示建立的长连接个数
     public static final String  CONNECTIONS_KEY                    = "connections";
-
+    //服务提供方最大可接受连接数
     public static final String  ACCEPTS_KEY                        = "accepts";
 
     public static final String  IDLE_TIMEOUT_KEY                   = "idle.timeout";

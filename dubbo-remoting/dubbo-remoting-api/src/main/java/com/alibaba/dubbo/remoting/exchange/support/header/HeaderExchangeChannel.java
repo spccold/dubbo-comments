@@ -137,10 +137,11 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         closed = true;
         if (timeout > 0) {
             long start = System.currentTimeMillis();
+            //检查当前channel上是否还存在未完成响应的请求
             while (DefaultFuture.hasFuture(HeaderExchangeChannel.this) 
                     && System.currentTimeMillis() - start < timeout) {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(10);//spin 10 ms
                 } catch (InterruptedException e) {
                     logger.warn(e.getMessage(), e);
                 }

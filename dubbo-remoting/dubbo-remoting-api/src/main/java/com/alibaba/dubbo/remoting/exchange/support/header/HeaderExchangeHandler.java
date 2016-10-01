@@ -125,6 +125,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
             ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
             try {
+                //如果是request的话, sent是空操作
                 handler.sent(exchangeChannel, message);
             } finally {
                 HeaderExchangeChannel.removeChannelIfDisconnected(channel);
@@ -134,6 +135,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         }
         if (message instanceof Request) {
             Request request = (Request) message;
+            //设置发送时间
             DefaultFuture.sent(channel, request);
         }
         if (exception != null) {

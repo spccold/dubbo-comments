@@ -59,7 +59,7 @@ final class HeartBeatTask implements Runnable {
                             || ( lastWrite != null && now - lastWrite > heartbeat ) ) {
                         Request req = new Request();
                         req.setVersion( "2.0.0" );
-                        req.setTwoWay( true );//为啥需要双向?
+                        req.setTwoWay( true );//为啥需要双向? 需要修改最好读取和修改时间
                         req.setEvent( Request.HEARTBEAT_EVENT );
                         channel.send( req );
                         if ( logger.isDebugEnabled() ) {

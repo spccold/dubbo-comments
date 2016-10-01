@@ -70,6 +70,7 @@ public class NettyClient extends AbstractClient {
         bootstrap.setOption("keepAlive", true);
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("connectTimeoutMillis", getTimeout());
+        //netty handler
         final NettyHandler nettyHandler = new NettyHandler(getUrl(), this);
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() {
@@ -159,6 +160,7 @@ public class NettyClient extends AbstractClient {
         Channel c = channel;
         if (c == null || ! c.isConnected())
             return null;
+        //may be NettyChannel
         return NettyChannel.getOrAddChannel(c, getUrl(), this);
     }
 

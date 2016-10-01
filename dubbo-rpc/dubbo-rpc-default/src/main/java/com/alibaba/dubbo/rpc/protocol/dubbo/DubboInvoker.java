@@ -122,7 +122,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
         if (super.isDestroyed()){
             return ;
         } else {
-            //dubbo check ,避免多次关闭
+            //避免多次关闭
             destroyLock.lock();
             try{
                 if (super.isDestroyed()){
@@ -132,6 +132,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 if (invokers != null){
                     invokers.remove(this);
                 }
+                //close ExchangeClient
                 for (ExchangeClient client : clients) {
                     try {
                         client.close();

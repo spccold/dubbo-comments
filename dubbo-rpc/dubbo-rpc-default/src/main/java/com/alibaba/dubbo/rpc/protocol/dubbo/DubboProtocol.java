@@ -67,7 +67,7 @@ public class DubboProtocol extends AbstractProtocol {
     public final ReentrantLock lock = new ReentrantLock();
     
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<String, ExchangeServer>(); // <host:port,Exchanger>
-    
+    /** address(host:port) <=> */
     private final Map<String, ReferenceCountExchangeClient> referenceClientMap = new ConcurrentHashMap<String, ReferenceCountExchangeClient>(); // <host:port,Exchanger>
     
     private final ConcurrentMap<String, LazyConnectExchangeClient> ghostClientMap = new ConcurrentHashMap<String, LazyConnectExchangeClient>();
@@ -116,6 +116,7 @@ public class DubboProtocol extends AbstractProtocol {
             if (message instanceof Invocation) {//consumer端处理来自provider端的回调
                 reply((ExchangeChannel) channel, message);
             } else {
+                //作为client来说，是空调用
                 super.received(channel, message);
             }
         }
