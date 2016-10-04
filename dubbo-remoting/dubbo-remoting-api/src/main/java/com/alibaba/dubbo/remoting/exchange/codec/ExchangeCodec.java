@@ -57,7 +57,7 @@ public class ExchangeCodec extends TelnetCodec {
     
     protected static final byte     MAGIC_LOW          = Bytes.short2bytes(MAGIC)[1];
 
-    // message flag.
+    // message flag.  请求还是响应?
     protected static final byte     FLAG_REQUEST       = (byte) 0x80;
 
     protected static final byte     FLAG_TWOWAY        = (byte) 0x40;
@@ -210,6 +210,9 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
+        //|---------------------------------------------------header(16 bytes)-------------------------------------------------------|
+        //|---magic(2 bytes)---flag request&flag twoway&flag event(1 byte)---占位(1 byte)---request id(8 bytes)---data len(4 bytes)---|
+        //|---data bytes---|
         Serialization serialization = getSerialization(channel);
         // header.
         byte[] header = new byte[HEADER_LENGTH];
@@ -221,13 +224,15 @@ public class ExchangeCodec extends TelnetCodec {
 
         if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
         if (req.isEvent()) header[2] |= FLAG_EVENT;
-
+        //header[4] 是保留字段
         // set request id.
         Bytes.long2bytes(req.getId(), header, 4);
 
         // encode request data.
         int savedWriteIndex = buffer.writerIndex();
+        //set write index for this buffer
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
+        //序列化操作
         ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
         ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
         if (req.isEvent()) {
