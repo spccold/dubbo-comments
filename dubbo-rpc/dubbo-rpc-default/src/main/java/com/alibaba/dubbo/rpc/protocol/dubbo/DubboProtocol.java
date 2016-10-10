@@ -271,6 +271,7 @@ public class DubboProtocol extends AbstractProtocol {
         		serverMap.put(key, createServer(url));
         	} else {
         		//server支持reset,配合override功能使用
+        	    //threads number reset here
         		server.reset(url);
         	}
         }
