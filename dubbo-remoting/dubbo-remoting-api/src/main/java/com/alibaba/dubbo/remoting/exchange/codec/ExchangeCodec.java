@@ -50,7 +50,8 @@ public class ExchangeCodec extends TelnetCodec {
     // header length.
     protected static final int      HEADER_LENGTH      = 16;
 
-    // magic header.
+    // magic header. 
+    //在这里用作确认协议类型？
     protected static final short    MAGIC              = (short) 0xdabb;
     
     protected static final byte     MAGIC_HIGH         = Bytes.short2bytes(MAGIC)[0];
@@ -97,7 +98,7 @@ public class ExchangeCodec extends TelnetCodec {
                 buffer.readBytes(header, length, readable - length);
             }
             for (int i = 1; i < header.length - 1; i ++) {
-                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
+                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {//这里究竟是个什么意思
                     buffer.readerIndex(buffer.readerIndex() - header.length + i);
                     header = Bytes.copyOf(header, i);
                     break;
