@@ -99,6 +99,7 @@ final class NettyChannel extends AbstractChannel {
             //FIXME  sent为true的话   要等待数据写完才返回,失败抛出异常   add by jileng
             if (sent) {
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+                // 写超时了，难道不能取消这次写操作？
                 success = future.await(timeout);
             }
             Throwable cause = future.getCause();
