@@ -239,6 +239,7 @@ public class HeaderExchangeServer implements ExchangeServer {
             heatbeatTimer = scheduled.scheduleWithFixedDelay(
                     new HeartBeatTask( new HeartBeatTask.ChannelProvider() {
                         public Collection<Channel> getChannels() {
+                            //all channels received by current server
                             return Collections.unmodifiableCollection(
                                     HeaderExchangeServer.this.getChannels() );
                         }
